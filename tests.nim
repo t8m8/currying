@@ -1,4 +1,4 @@
-import unittest, future
+import unittest, future, sequtils
 
 import currying
 
@@ -23,3 +23,19 @@ suite "curring":
     proc g[T0, T1](x: T0, y: T0 -> T1): T1 {.curried.} = y(x)
     var gi2s = g[int, string](10)
     check(gi2s((x: int) => $x) == "10")
+
+  test "binary operator":
+    type
+      Int = distinct int
+
+    proc toInt(x: int): Int = Int(x)
+
+    proc `*`(x, y: Int): Int {.curried.} =
+      toInt(x.int * y.int)
+
+    var
+      x: Int = 2.toInt
+      data = map(@[1, 2, 3, 4, 5], toInt)
+      ans = @[2, 4, 6, 8, 10]
+    for i, val in map(data, (* x)):
+      check(val.int == ans[i])

@@ -20,7 +20,7 @@ macro curried*(f: untyped): auto =
   var
     procName = f.name()
     procNameStr =
-      if procName.kind == nnkIdent: $f.name()
+      if procName.kind in {nnkIdent, nnkAccQuoted}: $f.name()
       else: $f.name()[1]
     genericParams = f[2]
     params = typedParams(f.params())
