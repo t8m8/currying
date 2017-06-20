@@ -1,4 +1,4 @@
-import unittest
+import unittest, future
 
 import currying
 
@@ -19,3 +19,7 @@ suite "curring":
 
     var ff = f 10.01
     check(ff(1000.0) == 1010.01)
+
+    proc g[T0, T1](x: T0, y: T0 -> T1): T1 {.curried.} = y(x)
+    var gi2s = g[int, string](10)
+    check(gi2s((x: int) => $x) == "10")
