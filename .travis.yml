@@ -37,7 +37,7 @@ install:
 before_script:
     - export PATH="nim-$BRANCH/bin${PATH:+:$PATH}"
 script:
-    - nim c --cc:$CC --verbosity:0 -r tests.nim
+    - nim c --cc:$CC --verbosity:0 -r tests/tests.nim
 cache:
   directories:
     - nim-master
