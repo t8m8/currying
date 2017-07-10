@@ -47,6 +47,6 @@ var g10 = g[int, string](10)
 echo(g10((x: int) => $x)) # 10
 ```
 
-There are other examples in `tests` file.
+There are other examples in `tests/tests.nim` file.
 
 It can also be used with infix operators.
