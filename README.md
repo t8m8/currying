@@ -1,6 +1,12 @@
-# Currying Library for Nim
+# Currying
+
+This package is a simple currying library for Nim.
 
 ## Usage
+
+If you want to declare a curried function,  all you need to do is mark it with the  `curried` pragma.
+
+You can use this package as follow.
 
 ```nim
 import currying
@@ -10,6 +16,8 @@ proc f(x, y: A): A {.curried.} =
 ```
 
 ## Example
+
+The following example is a simple usage with sum function.
 
 ```nim
 import currying
@@ -21,21 +29,24 @@ echo sum10 20
 # 20
 ```
 
+
+
+`curried` pragma can be used with generic procedures.
+
 ```nim
-import currying, sequtils
+proc f[T](x, y: T): T {.curried.} = x + y
 
-type
-  Int = distinct int
+var fint = f 2
+echo(fint(6)) # 8
 
-converter toInt(x: int): Int = Int(x)
+var ffloat = f 10.01
+echo(ffloat(1000.0)) # 1010.01
 
-proc `$`(x: Int): string = $x.int
-
-proc `*`(x, y: Int): Int {.curried.} =
-  x.int * y.int
-
-var data = map(@[1, 2, 3, 4, 5], toInt)
-echo map(data, (* 2))
-# @[2, 4, 6, 8, 10]
+proc g[T0, T1](x: T0, y: T0 -> T1): T1 {.curried.} = y(x)
+var g10 = g[int, string](10)
+echo(g10((x: int) => $x)) # 10
 ```
 
+There are other examples in `tests` file.
+
+It can also be used with infix operators.
