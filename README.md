@@ -2,6 +2,12 @@
 
 This package is a simple currying library for Nim.
 
+## Installing
+
+```
+$ nimble install currying
+```
+
 ## Usage
 
 If you want to declare a curried function,  all you need to do is mark it with the  `curried` pragma.
@@ -34,6 +40,8 @@ echo sum10 20
 `curried` pragma can be used with generic procedures.
 
 ```nim
+import future
+
 proc f[T](x, y: T): T {.curried.} = x + y
 
 var fint = f 2
