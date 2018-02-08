@@ -32,7 +32,7 @@ proc sum(x, y: int): int {.curried.} = x + y
 
 var sum10 = sum 10
 echo sum10 20
-# 20
+# 30
 ```
 
 
