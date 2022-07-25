@@ -1,4 +1,4 @@
-import macros
+import macros, sugar, sequtils
 
 proc typedParams(params: NimNode): seq[NimNode] {.compileTime.} =
   ## (a, b: int, c: float)
@@ -18,39 +18,43 @@ macro curried*(f: untyped): auto =
   result = newStmtList()
 
   var
-    procName = f.name()
-    procNameStr =
-      if procName.kind in {nnkIdent, nnkAccQuoted}: $f.name()
-      else: $f.name()[1]
     genericParams = f[2]
-    params = typedParams(f.params())
-
+    originalParams = typedParams(f.params())
+  
   result.add(newNimNode(nnkProcDef).add(
-    procName,
+    f.name().copy(),
     newEmptyNode(),
-    genericParams,
-    newNimNode(nnkFormalParams).add(params),
+    genericParams.copy(),
+    newNimNode(nnkFormalParams).add(
+      map(originalParams, param => param.copy())
+    ),
     newEmptyNode(),
     newEmptyNode(),
-    f.body()))
+    f.body().copy()))
 
-  params[0] = newIdentNode("auto")
+  var baseParams = originalParams
+  baseParams[0] = newIdentNode("auto")
 
-  for i in countDown(params.len-1, 2):
-    var callParams = newSeq[NimNode]()
-    for param in params[1..i]:
-      callParams.add(param[0])
-    var
-      innerBody = newStmtList(newCall(procNameStr, callParams))
-      innerParams = newSeq[NimNode]()
-    innerParams.add([newIdentNode("auto"), params[i]])
-    var procBody = newStmtList(
-      newProc(params=innerParams, body=innerBody, procType=nnkLambda))
+  for i in countdown(baseParams.len-1, 2):
     result.add(newNimNode(nnkProcDef).add(
-      procName,
+      f.name().copy(),
       newEmptyNode(),
-      genericParams,
-      newNimNode(nnkFormalParams).add(params[0..i-1]),
+      genericParams.copy(),
+      newNimNode(nnkFormalParams).add(
+        map(baseParams[0..i-1], param => param.copy())
+      ),
       newEmptyNode(),
       newEmptyNode(),
-      procBody))
+      newStmtList(
+        newProc(
+          params=[baseParams[0], baseParams[i]],
+          body=newStmtList(
+            newCall(
+              f.name().copy(),
+              map(baseParams[1..i], param => param[0].copy())
+            )
+          ),
+          procType=nnkLambda
+        )
+      )
+    ))

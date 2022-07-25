@@ -1,4 +1,4 @@
-import unittest, future, sequtils
+import unittest, sugar, sequtils
 
 import currying
 
